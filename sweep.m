@@ -1,14 +1,12 @@
 
-% KEY FEATURES OF SWEEP2
+% KEY FEATURES OF SWEEP
 % maintains semicircular sweep with constantly-updating dist_vecs object variable
 % optimized by skipping multidimensional array step
 %   directly flattens it into a 2D matrix of indices for linear indexing
-% full grid 12 mins
 
-
-% SETUP PART 1
+% SETUP: manually load.
 % load total, dist_vecs
-% find maxDist 
+% set maxDist 
 
 function final_result = sweep_local(total, maxDist, dist_vecs)
 
@@ -38,16 +36,14 @@ function final_result = sweep_local(total, maxDist, dist_vecs)
         vecs = dist_vecs{dist+1};   % get the vectors for this distance
     
         % out of bounds points are zero. There are 3 such out-of-bounds regions
-        % the left margin, right margin, and bottom margin (the semicircle is a
-        % bottom half of a circle)
+        % the left margin, right margin, and bottom margin (the semicircle is a bottom half of a circle)
         % we create margins that are the size of "dist"
         extendedTotal = zeros(size(total,1)+dist, size(total,2)+2*dist);
         extendedTotal(1:size(total,1), (dist+1):(size(total,2)+dist)) = total;
         extendTotalVec = extendedTotal(true(size(extendedTotal,1),size(extendedTotal,2)));
         height = size(extendedTotal,1);
         
-        % NOTE: BASED ON ASSUMPTION THAT NO POINT IN TOTAL IS EXACTLY 0, 
-        % IE. THE MEAN
+        % NOTE: BASED ON ASSUMPTION THAT NO POINT IN TOTAL IS EXACTLY 0, IE. THE MEAN
     
         % directly linearize:
         px = (dist + vecs(:,1) + coordinates(1,:) - 1)*height;
@@ -57,11 +53,10 @@ function final_result = sweep_local(total, maxDist, dist_vecs)
     
         % extended expression selected - extracts expression from extended grid
         extExpSel = extendTotalVec(linIndex);
-        % SPECIAL CASE WHEN DIST = 0 -- MATLAB REDUCED THE DIMENSIONS!
-        % SIMPLIFIES IT FOR SOME REASON
         
         % now correlation calculation
         disp("correlation calculation")
+        % special case when dist=0, Matlab reduces the dimensions
         if dist == 0
             corrs = extExpSel.' * totalVec;
             result = [result; (corrs / length(totalVec))];
@@ -79,9 +74,8 @@ function final_result = sweep_local(total, maxDist, dist_vecs)
 
 end
 
-% figure();
-% plot(0:dist, result, 'ok');
-
+figure();
+plot(0:dist, result, 'ok');
 
 
 function grid = cropData(originalGrid, top, bottom, left, right)
@@ -89,14 +83,6 @@ function grid = cropData(originalGrid, top, bottom, left, right)
     tempGrid = zeros(bottom-top+1, right-left+1);
     tempGrid(1:(bottom-top+1), 1:(right-left+1)) = originalGrid(top:bottom, left:right);
     grid = tempGrid;
-
-end
-
-
-function linIndex = linearizingMultiValid(coordinates, vecs, height, dist)
-    px = (dist + vecs(:,1) + coordinates(1,:) - 1)*height;
-    py = vecs(:,2) + coordinates(2,:);
-    linIndex = px + py;
 
 end
 
