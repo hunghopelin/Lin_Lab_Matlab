@@ -1,5 +1,6 @@
 
 % KEY FEATURES OF SWEEP
+% goal: 1D correlation analysis by distance, given spatial transcriptomics data
 % maintains semicircular sweep with constantly-updating dist_vecs object variable
 % optimized by skipping multidimensional array step
 %   directly flattens it into a 2D matrix of indices for linear indexing
